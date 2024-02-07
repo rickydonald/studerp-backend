@@ -9,4 +9,8 @@ namespace App\Controllers;
  */
 class Controller extends \Leaf\Controller
 {
+    public function __construct()
+    {
+        db()->autoConnect();
+    }
 }

@@ -2,7 +2,7 @@
 
 /** Middleware Registers */
 app()->registerMiddleware('unauthenticated_route', function () {
-    echo 'Home middleware';
+    // echo 'Home middleware';
 });
 app()->registerMiddleware('authenticated_route', function () {
     echo 'Home middleware';
@@ -11,10 +11,10 @@ app()->registerMiddleware('authenticated_route', function () {
 /** API v1 Routes */
 app()->group('/v1/api', function () {
     /** Un Authenticated Routes (External) */
-    app()->group('/e', ["middleware" => "unauthenticated_route"], function () {
+    app()->group('/e', ["middleware" => "unauthenticated_route", function () {
         app()->post('/login', "AuthController@login");
         app()->post('/forgot_password', "AuthController@forgotPassword");
-    });
+    }]);
 
     /** Authenticated Routes (Internal) */
     app()->group('/i', ["middleware" => "authenticated_route", function () {
@@ -27,14 +27,14 @@ app()->group('/v1/api', function () {
                 app()->delete('/delete', "UserController@delete");
             });
             /** Academic Routes */
-            app()->group('/academic', function() {
+            app()->group('/academic', function () {
                 app()->get('/show/all', "AcademicController@showAll");
                 app()->get('/cia/show', "AcademicController@showCia");
                 app()->get('/semester_results/show', "AcademicController@showAllSemesterResults");
                 app()->get('/current_paper/show', "AcademicController@showCurrentPapers");
             });
             /** Attendance Routes */
-            app()->group('/attendance', function() {
+            app()->group('/attendance', function () {
                 app()->get('/current/lookup', "AttendanceController@currentAttendance");
                 app()->get('/show', "AttendanceController@show");
                 app()->post('/request', "AttedanceController@requestAttendanceChange");
@@ -42,7 +42,7 @@ app()->group('/v1/api', function () {
                 app()->post('/generate_letter', "AttendanceController@generateLetter");
             });
             /** Fees Routes */
-            app()->group('/fees', function() {
+            app()->group('/fees', function () {
                 app()->get('/show/all', "FeeController@showAll");
                 app()->get('/show/paid', "FeeController@showPaid");
                 app()->get('/show/unpaid', "FeeController@showUnpaid");
