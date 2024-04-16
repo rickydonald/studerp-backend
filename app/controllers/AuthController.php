@@ -42,15 +42,24 @@ class AuthController extends Controller
                 "password" => md5($password)
             ])
             ->hidden("password")
-            ->fetchObj();
+            ->fetchAll();
+
+        if (!$data) {
+            response()->json([
+                'status' => false,
+                'error' => 'user-not-found',
+                'message' => 'Invalid password, retry again!'
+            ]);
+            exit();
+        }
 
         $bearer = Authentication::generateToken(
             [
                 "iat" => time(),
                 "iss" => "localhost",
                 "exp" => time() + ($this->defaultBearerTokenExpiry ?? (60 * 60 * 24)),
-                "user_id" => $data->register_number,
-                "data" => $data
+                "user_id" => $data[0]['register_number'],
+                "data" => $data[0]
             ],
             _env("JWT_SECRET")
         );
@@ -58,18 +67,10 @@ class AuthController extends Controller
         $response = [
             "status" => true,
             "message" => "Login successful",
-            "data" => $data,
+            "data" => $data[0],
             "token" => $bearer
         ];
 
         response()->json($response);
-    }
-
-    /** Method to recover user password */
-    public function forgotPassword()
-    {
-        $currentPassword = $this->request->get('current_password');
-        $passwordInput = $this->request->get('new_password');
-        $confirmPasswordInput = $this->request->get('confirm_password');
     }
 }
